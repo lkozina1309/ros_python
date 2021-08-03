@@ -1,3 +1,5 @@
+# Script global_position.py is using global coordinates to fly around my neighbourhood.
+
 from __future__ import print_function
 import os
 import numpy as np
@@ -64,33 +66,41 @@ class Drone:
 		rospy.Subscriber("/mavros/global_position/global", NavSatFix, self.gps_callback)
 		global_position_pub = rospy.Publisher('/mavros/setpoint_raw/global', GlobalPositionTarget, queue_size=1)
 		g = GlobalPositionTarget() 
-		g.latitude = -35.3632702
-		g.longitude = 149.1652374
-		g.altitude=2
+		g.latitude = 45.4919385
+		g.longitude = 18.0904249
+		g.altitude=20
 		g.type_mask=4088
 		g.coordinate_frame=6
 		global_position_pub.publish(g)
 		time.sleep(10)
 			
-		g.latitude = -35.3632702
-		g.longitude = 149.1652582
-		g.altitude=2
+		g.latitude = 45.493706
+		g.longitude = 18.0902743
+		g.altitude=20
 		g.type_mask=4088
 		g.coordinate_frame=6
 		global_position_pub.publish(g)
 		time.sleep(10)
 			
-		g.latitude = -35.3632815
-		g.longitude = 149.1652765
-		g.altitude=2
+		g.latitude = 45.4928824
+		g.longitude = 18.0913579
+		g.altitude=20
 		g.type_mask=4088
 		g.coordinate_frame=6
 		global_position_pub.publish(g)
 		time.sleep(10)
 			
-		g.latitude = -35.363268
-		g.longitude = 149.1652391
-		g.altitude=2
+		g.latitude = 45.4923109
+		g.longitude = 18.0933374
+		g.altitude=20
+		g.type_mask=4088
+		g.coordinate_frame=6
+		global_position_pub.publish(g)
+		time.sleep(10)
+
+		g.latitude = 45.4919385
+		g.longitude = 18.0904249
+		g.altitude=20
 		g.type_mask=4088
 		g.coordinate_frame=6
 		global_position_pub.publish(g)
