@@ -199,7 +199,7 @@ include_directories(
 
 # Solutions 
 
-catkin_install_python(PROGRAMS  src/test_connection.py src/takeoff_and_land.py
+catkin_install_python(PROGRAMS  src/test_connection.py src/takeoff_and_land.py src/velocity.py src/local_position.py src/global_position.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
