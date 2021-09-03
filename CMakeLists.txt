@@ -10,6 +10,10 @@ project(python)
 find_package(catkin REQUIRED COMPONENTS
   mavros
   std_msgs
+  geometry_msgs
+  mavros_msgs
+  rospy
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
