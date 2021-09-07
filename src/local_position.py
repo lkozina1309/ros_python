@@ -57,7 +57,7 @@ class Drone:
 		rospy.wait_for_service('/mavros/cmd/takeoff')
 		try:
 			takeoffService = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)	
-			response = takeoffService(altitude = 2, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
+			response = takeoffService(altitude = 10, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
 			rospy.loginfo(response)
 		except rospy.ServiceException as e:
 			print ("Service takeoff call failed: %s"%e)
