@@ -13,11 +13,8 @@ import mavros_msgs
 from mavros import command
 from std_msgs.msg import String
 from mavros_msgs import srv
-from mavros_msgs.msg import PositionTarget
+from mavros_msgs.msg import PositionTarget, GlobalPositionTarget
 from mavros_msgs.msg import GlobalPositionTarget
-from geometry_msgs.msg import Twist
-from geometry_msgs.msg import TwistStamped
-from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import NavSatFix
 from mavros_msgs.srv import SetMode
 from mavros_msgs.msg import State
@@ -62,50 +59,18 @@ class Drone:
 		except rospy.ServiceException as e:
 			print ("Service takeoff call failed: %s"%e)
 			
-	def move(self):
+	def move(self, x, y):
 		rospy.Subscriber("/mavros/global_position/global", NavSatFix, self.gps_callback)
 		global_position_pub = rospy.Publisher('/mavros/setpoint_raw/global', GlobalPositionTarget, queue_size=1)
 		g = GlobalPositionTarget() 
-		g.latitude = 45.4919385
-		g.longitude = 18.0904249
+		g.latitude = x
+		g.longitude = y
 		g.altitude=20
 		g.type_mask=4088
 		g.coordinate_frame=6
 		global_position_pub.publish(g)
 		time.sleep(10)
 			
-		g.latitude = 45.493706
-		g.longitude = 18.0902743
-		g.altitude=20
-		g.type_mask=4088
-		g.coordinate_frame=6
-		global_position_pub.publish(g)
-		time.sleep(10)
-			
-		g.latitude = 45.4928824
-		g.longitude = 18.0913579
-		g.altitude=20
-		g.type_mask=4088
-		g.coordinate_frame=6
-		global_position_pub.publish(g)
-		time.sleep(10)
-			
-		g.latitude = 45.4923109
-		g.longitude = 18.0933374
-		g.altitude=20
-		g.type_mask=4088
-		g.coordinate_frame=6
-		global_position_pub.publish(g)
-		time.sleep(10)
-
-		g.latitude = 45.4919385
-		g.longitude = 18.0904249
-		g.altitude=20
-		g.type_mask=4088
-		g.coordinate_frame=6
-		global_position_pub.publish(g)
-		time.sleep(10)
-	
 						
 	def land(self):
 		print("Landing... ")
@@ -130,7 +95,15 @@ def main(args):
 	time.sleep(5)
 	v.takeoff()
 	time.sleep(10)
-	v.move()
+	v.move(45.4919385, 18.0904249)
+	time.sleep(3)
+	v.move(45.493706, 18.0902743)
+	time.sleep(5)
+	v.move(45.4928824, 18.0913579)
+	time.sleep(5)
+	v.move(45.4923109, 18.0933374)
+	time.sleep(5)
+	v.move(45.4919385, 18.0904249)
 	time.sleep(5)
 	v.land()
 	time.sleep(10)
