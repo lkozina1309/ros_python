@@ -61,55 +61,18 @@ class Drone:
 		rospy.wait_for_service('/mavros/cmd/takeoff')
 		try:
 			takeoffService = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)
-			response = takeoffService(altitude = 10, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
+			response = takeoffService(altitude = 2, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
 			rospy.loginfo(response)
 		except rospy.ServiceException as e:
 			print ("Service takeoff call failed: %s"%e)
 			
-	def square(self):
+	def move(self, x, y):
 		pub = rospy.Publisher('/mavros/setpoint_velocity/cmd_vel', TwistStamped, queue_size=10)
 		vel = TwistStamped()
 
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);		
-		
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=-5;
-		pub.publish(vel);
-		rospy.sleep(5);
-		
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);
-		
-		vel.twist.linear.x=5;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);
-
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);		
-		
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=5;
-		pub.publish(vel);
-		rospy.sleep(5);
-		
-		vel.twist.linear.x=0;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);
-		
-		vel.twist.linear.x=-5;
-		vel.twist.linear.y=0;
-		pub.publish(vel);
-		rospy.sleep(5);
-		
+		vel.twist.linear.x= x;
+		vel.twist.linear.y= y;
+		pub.publish(vel);			
 		
 	def land(self):
 		print("Landing... ")
@@ -124,7 +87,7 @@ class Drone:
 def main(args):
 	v=Drone()
 	v.connect("drone",rate=10)
-	time.sleep(10)
+	time.sleep(5)
 	rospy.wait_for_service('/mavros/set_mode')
 	change_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)
 	response = change_mode(custom_mode="GUIDED")
@@ -133,9 +96,17 @@ def main(args):
 	v.arm()
 	time.sleep(5)
 	v.takeoff()
-	time.sleep(10)
-	v.square()
-	time.sleep(10)
+	time.sleep(5)
+	v.move(0, 0)
+	time.sleep(2)
+	v.move(-5, 0)
+	time.sleep(5)
+	v.move(0, -5)
+	time.sleep(5)
+	v.move(5, 0)
+	time.sleep(5)
+	v.move(0, 5)
+	time.sleep(5)
 	v.land()
 	time.sleep(10)
 	
