@@ -95,16 +95,13 @@ def main(args):
 	time.sleep(5)
 	v.takeoff()
 	time.sleep(10)
-	v.move(45.4919385, 18.0904249)
-	time.sleep(3)
-	v.move(45.493706, 18.0902743)
-	time.sleep(5)
-	v.move(45.4928824, 18.0913579)
-	time.sleep(5)
-	v.move(45.4923109, 18.0933374)
-	time.sleep(5)
-	v.move(45.4919385, 18.0904249)
-	time.sleep(5)
+	waypoints = [[45.4919385, 18.0904249], [45.493706, 18.0902743], [45.4928824, 18.0913579], [45.4923109, 18.0933374], [45.4919385, 18.0904249]]
+	i = 0
+	while i < len (waypoints):
+		x = waypoints [i] [0]
+		y = waypoints [i] [1]
+		v.move(x, y)
+		i = i+1
 	v.land()
 	time.sleep(10)
 	
