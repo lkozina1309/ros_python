@@ -13,15 +13,10 @@ import mavros_msgs
 from mavros import command
 from std_msgs.msg import String
 from mavros_msgs import srv
-from mavros_msgs.msg import PositionTarget
-from geometry_msgs.msg import Twist
-from geometry_msgs.msg import TwistStamped
+from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
-from sensor_msgs.msg import NavSatFix
-from mavros_msgs.srv import SetMode
 from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool
-from mavros_msgs.srv import CommandTOL
+from mavros_msgs.srv import CommandBool, CommandTOL, SetMode
 from mavros_msgs.srv import *
 
 class Drone:
@@ -29,9 +24,6 @@ class Drone:
 	def __init__(self):
 		self.rate = 1
 		self.connected = False
-	
-	def pose_sub_callback(self,pose_sub_data):
-		self.current_pose = pose_sub_data
 	
 	def gps_callback(self,data):
 		self.gps = data
@@ -62,56 +54,19 @@ class Drone:
 		except rospy.ServiceException as e:
 			print ("Service takeoff call failed: %s"%e)
 			
-	def square(self):
-		self.goal_pose = PoseStamped()
-		rospy.Subscriber("/mavros/global_position/global", NavSatFix, self.gps_callback)
-		local_position_subscribe = rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.pose_sub_callback)
+	def move(self, x, y):
+		goal_pose = PoseStamped()
 		local_position_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size = 10) 
 
-		self.goal_pose.header.frame_id = "8"
-		self.goal_pose.header.seq = 1
-		self.goal_pose.pose.position.x = 0
-		self.goal_pose.pose.position.y = 0
-		self.goal_pose.pose.position.z = 10
-		local_position_pub.publish(self.goal_pose)
-		rospy.loginfo(self.goal_pose)
+		goal_pose.header.frame_id = "8"
+		goal_pose.header.seq = 1
+		goal_pose.pose.position.x = x
+		goal_pose.pose.position.y = y
+		goal_pose.pose.position.z = 2
+		local_position_pub.publish(goal_pose)
+		rospy.loginfo(goal_pose)
 		time.sleep(5)
 		
-		self.goal_pose.header.frame_id = "8"
-		self.goal_pose.header.seq = 1
-		self.goal_pose.pose.position.x = 20
-		self.goal_pose.pose.position.y = 0
-		self.goal_pose.pose.position.z = 10
-		local_position_pub.publish(self.goal_pose)
-		rospy.loginfo(self.goal_pose)
-		time.sleep(5)
-		
-		self.goal_pose.header.frame_id = "8"
-		self.goal_pose.header.seq = 1
-		self.goal_pose.pose.position.x = 20
-		self.goal_pose.pose.position.y = 20
-		self.goal_pose.pose.position.z = 10
-		local_position_pub.publish(self.goal_pose)
-		rospy.loginfo(self.goal_pose)
-		time.sleep(5)
-		
-		self.goal_pose.header.frame_id = "8"
-		self.goal_pose.header.seq = 1
-		self.goal_pose.pose.position.x = 0
-		self.goal_pose.pose.position.y = 20
-		self.goal_pose.pose.position.z = 10
-		local_position_pub.publish(self.goal_pose)
-		rospy.loginfo(self.goal_pose)
-		time.sleep(5)
-		
-		self.goal_pose.header.frame_id = "8"
-		self.goal_pose.header.seq = 1
-		self.goal_pose.pose.position.x = 0
-		self.goal_pose.pose.position.y = 0
-		self.goal_pose.pose.position.z = 10
-		local_position_pub.publish(self.goal_pose)
-		rospy.loginfo(self.goal_pose)
-		time.sleep(5)
 	
 	def land(self):
 		print("Landing... ")
@@ -136,8 +91,13 @@ def main(args):
 	time.sleep(5)
 	v.takeoff()
 	time.sleep(10)
-	v.square()
-	time.sleep(5)
+	pos = [[0, 0], [-20, 0], [-20, -20], [0, -20], [0, 0]]
+	i = 0
+	while i < len (pos):
+		x = pos [i] [0]
+		y = pos [i] [1]
+		v.move(x, y)
+		i = i+1
 	v.land()
 	time.sleep(10)
 	
