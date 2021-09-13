@@ -13,12 +13,9 @@ import mavros_msgs
 from mavros import command
 from std_msgs.msg import String
 from mavros_msgs import srv
-from geometry_msgs.msg import Twist
-from geometry_msgs.msg import TwistStamped
-from mavros_msgs.srv import SetMode
+from geometry_msgs.msg import Twist, TwistStamped
+from mavros_msgs.srv import SetMode, CommandTOL, CommandBool
 from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool
-from mavros_msgs.srv import CommandTOL
 from mavros_msgs.srv import *
 
 
