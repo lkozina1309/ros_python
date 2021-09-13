@@ -9,9 +9,7 @@ import threading
 import time
 import mavros_msgs
 from std_msgs.msg import String
-from mavros_msgs.srv import SetMode
-from mavros_msgs.srv import CommandBool
-from mavros_msgs.srv import CommandTOL
+from mavros_msgs.srv import SetMode, CommandBool,  CommandTOL
 
 class Drone:
 	def __init__(self):
