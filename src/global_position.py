@@ -14,12 +14,8 @@ from mavros import command
 from std_msgs.msg import String
 from mavros_msgs import srv
 from mavros_msgs.msg import PositionTarget, GlobalPositionTarget
-from mavros_msgs.msg import GlobalPositionTarget
 from sensor_msgs.msg import NavSatFix
-from mavros_msgs.srv import SetMode
-from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool
-from mavros_msgs.srv import CommandTOL
+from mavros_msgs.msg import State, CommandTOL, CommandBool, SetMode
 from mavros_msgs.srv import *
 
 
