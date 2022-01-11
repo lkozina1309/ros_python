@@ -1,5 +1,5 @@
-# Tensorflow
-ROS scripts for home.made drone in Python.
+# Ros Python
+ROS scripts for home made drone in Python.
 
 ## Getting Started
 
