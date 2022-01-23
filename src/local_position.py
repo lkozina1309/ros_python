@@ -62,7 +62,7 @@ class Drone:
 		goal_pose.header.seq = 1
 		goal_pose.pose.position.x = x
 		goal_pose.pose.position.y = y
-		goal_pose.pose.position.z = 2
+		goal_pose.pose.position.z = 10
 		local_position_pub.publish(goal_pose)
 		rospy.loginfo(goal_pose)
 		time.sleep(5)
