@@ -1,27 +1,26 @@
-from __future__ import print_function
-import os
-import sys
+# Script for testing connection
+
+#!/usr/bin/env python3
 import rospy
-import mavros
-import threading
-import time
-from std_msgs.msg import String
+from mavros_msgs.msg import State
 
 class Drone:
-	def __init__(self):
-		self.rate = 1
-		self.connected = False
-	
-	def connect(self, node: str, rate: int):
-    		rospy.init_node(node, anonymous=True)
-    		self.rate = rospy.Rate(rate)
-    		self.connected = True
-    		rospy.loginfo("Connected...")
-    		rospy.spin()
-	
-def main(args):
-	v=Drone()
-	v.connect("drone",rate=10)
-	
+    def __init__(self):
+        self.state = State()
+        self.connected = False
+
+
+    def connect(self):
+        rospy.init_node('flying', anonymous=True)
+        self.connected=True 
+        rospy.loginfo("Connected...")
+
+def main():
+    v=Drone()
+    v.connect()    
+
 if __name__ == "__main__":
-	main(sys.argv)
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
