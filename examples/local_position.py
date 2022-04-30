@@ -1,105 +1,82 @@
-# Script local_position.py is used to takeoff to 10 meters and then to make a square in the air.
+# Script local_position.py is used to takeoff to 2 meters and then to make a square in the air.
 
-from __future__ import print_function
-import os
-import numpy as np
-import math
-import sys
+#!/usr/bin/env python3
 import rospy
-import mavros
-import threading
-import time
 import mavros_msgs
-from mavros import command
-from std_msgs.msg import String
-from mavros_msgs import srv
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool, CommandTOL, SetMode
-from mavros_msgs.srv import *
+from mavros_msgs.srv import SetMode, CommandBool,  CommandTOL
+from geometry_msgs.msg import PoseStamped
 
 class Drone:
-		
-	def __init__(self):
-		self.rate = 1
-		self.connected = False
-	
-	def gps_callback(self,data):
-		self.gps = data
-		self.gps_read = True
+    def __init__(self):
+        self.state = State()
+        self.connected = False
+        self.goal = PoseStamped() 
 
-	def connect(self, node: str, rate: int):
-    		rospy.init_node(node, anonymous=True)
-    		self.rate = rospy.Rate(rate)
-    		self.connected = True
-    		rospy.loginfo("Connected...")
-	
-	def arm(self):
-		print("Arming...")
-		rospy.wait_for_service('/mavros/cmd/arming')
-		try:
-			armService = rospy.ServiceProxy('/mavros/cmd/arming', mavros_msgs.srv.CommandBool)
-			armService(True)
-		except rospy.ServiceException as e:
-			print ("Service arm call failed: %s" %e)	
- 
-	def takeoff(self):
-		print("Takeoff ...")
-		rospy.wait_for_service('/mavros/cmd/takeoff')
-		try:
-			takeoffService = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)	
-			response = takeoffService(altitude = 10, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
-			rospy.loginfo(response)
-		except rospy.ServiceException as e:
-			print ("Service takeoff call failed: %s"%e)
-			
-	def move(self, x, y):
-		goal_pose = PoseStamped()
-		local_position_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size = 10) 
+    def connect(self):
+        rospy.init_node('flying', anonymous=True)
+        self.state.connected==True 
+        rospy.loginfo("Connected...")
 
-		goal_pose.header.frame_id = "8"
-		goal_pose.header.seq = 1
-		goal_pose.pose.position.x = x
-		goal_pose.pose.position.y = y
-		goal_pose.pose.position.z = 10
-		local_position_pub.publish(goal_pose)
-		rospy.loginfo(goal_pose)
-		time.sleep(5)
-		
-	
-	def land(self):
-		print("Landing... ")
-		rospy.wait_for_service('/mavros/cmd/land')
-		try:
-			landService = rospy.ServiceProxy('/mavros/cmd/land', CommandTOL)
-			response = landService(altitude = 0, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
-			rospy.loginfo(response)
-		except rospy.ServiceException as e:
-			print ("service land call failed: %s. The vehicle cannot land "%e) 
-			
-def main(args):
-	v=Drone()
-	v.connect("drone",rate=10)
-	time.sleep(10)
-	rospy.wait_for_service('/mavros/set_mode')
-	change_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)
-	response = change_mode(custom_mode="GUIDED")
-	print("Mode set to GUIDED")
-	time.sleep(5)
-	v.arm()
-	time.sleep(5)
-	v.takeoff()
-	time.sleep(10)
-	pos = [[0, 0], [-20, 0], [-20, -20], [0, -20], [0, 0]]
-	i = 0
-	while i < len (pos):
-		x = pos [i] [0]
-		y = pos [i] [1]
-		v.move(x, y)
-		i = i+1
-	v.land()
-	time.sleep(10)
-	
+    def arm_and_takeoff(self):
+        rospy.loginfo("Arming...")
+        rospy.wait_for_service('/mavros/cmd/arming')
+        try:
+            armService = rospy.ServiceProxy('/mavros/cmd/arming', mavros_msgs.srv.CommandBool)
+            armService(True)
+            rospy.loginfo("Drone armed")
+        except rospy.ServiceException as e:
+            rospy.loginfo("Arming failed")
+
+        rospy.wait_for_service('/mavros/cmd/takeoff')
+        try:
+            takeoff = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)
+            response = takeoff(altitude = 2, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
+            rospy.loginfo("Takeoff ...")
+        except rospy.ServiceException as e:
+            rospy.loginfo("Takeoff failed")
+
+    def move(self,x,y):        
+        local_position = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size = 10)
+        self.goal.header.frame_id = "8"
+        self.goal.header.seq = 1
+        self.goal.pose.position.x = x
+        self.goal.pose.position.y = y
+        self.goal.pose.position.z = 2
+        local_position.publish(self.goal)
+        rospy.loginfo(self.goal)
+
+    def land(self):
+        rospy.wait_for_service('/mavros/cmd/land')
+        try:
+            landing = rospy.ServiceProxy('/mavros/cmd/land', CommandTOL)
+            response = landing(altitude = 0, latitude = 0, longitude = 0, min_pitch = 0, yaw = 0)
+            rospy.loginfo("Landing... ")
+        except rospy.ServiceException as e:
+            rospy.loginfo("Landing failed")
+
+
+def main():
+    v=Drone()
+    v.connect()
+    rospy.sleep(3)
+    rospy.wait_for_service('/mavros/set_mode')
+    change_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)
+    response = change_mode(custom_mode="GUIDED")
+    v.arm_and_takeoff()
+    rospy.sleep(10)
+    pos = [[0, 0], [-5, 0], [-5, -5], [0, -5], [0, 0]]
+    i = 0
+    while i < len (pos):
+        x = pos [i] [0]
+        y = pos [i] [1]
+        v.move(x, y)
+        i = i+1
+        rospy.sleep(10)
+    v.land()    
+
 if __name__ == "__main__":
-	main(sys.argv)
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
